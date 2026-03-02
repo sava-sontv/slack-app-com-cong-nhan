@@ -40,6 +40,10 @@ function getSql() {
   return neon(getConnectionString());
 }
 
+/**
+ * Thêm hoặc ghi đè câu trả lời. Cùng user + cùng message_ts = một bản ghi.
+ * Nếu user đổi từ Yes sang No (hoặc ngược lại), bản ghi cũ được cập nhật.
+ */
 export async function addResponse(
   response: Omit<SlackResponse, 'id' | 'respondedAt'>
 ): Promise<SlackResponse> {
