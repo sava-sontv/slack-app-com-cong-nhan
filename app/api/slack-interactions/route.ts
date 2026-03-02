@@ -93,9 +93,9 @@ export async function POST(request: NextRequest) {
 
       let responseText = '';
       if (isYes) {
-        responseText = `:white_check_mark: ${userName} đã chọn **Yes**`;
+        responseText = `:white_check_mark: ${userName} đã chọn **Có**`;
       } else if (isNo) {
-        responseText = `:x: ${userName} đã chọn **No**`;
+        responseText = `:x: ${userName} đã chọn **Không**`;
       }
 
       if (responseUrl && responseText) {

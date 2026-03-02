@@ -23,14 +23,16 @@ type BlockActionsPayload = {
 function buildSummaryLines(responses: { userId: string; choice: string }[]) {
   const yesUsers = responses.filter((r) => r.choice === 'yes');
   const noUsers = responses.filter((r) => r.choice === 'no');
+  const yesCount = yesUsers.length;
+  const noCount = noUsers.length;
   const yesLine =
-    yesUsers.length > 0
-      ? `*Yes:* ${yesUsers.map((u) => `<@${u.userId}>`).join(' ')}`
-      : '*Yes:* _chưa có_';
+    yesCount > 0
+      ? `*Yes (${yesCount}):* ${yesUsers.map((u) => `<@${u.userId}>`).join(' ')}`
+      : `*Yes (0):* _chưa có_`;
   const noLine =
-    noUsers.length > 0
-      ? `*No:* ${noUsers.map((u) => `<@${u.userId}>`).join(' ')}`
-      : '*No:* _chưa có_';
+    noCount > 0
+      ? `*No (${noCount}):* ${noUsers.map((u) => `<@${u.userId}>`).join(' ')}`
+      : `*No (0):* _chưa có_`;
   return `${yesLine}\n${noLine}`;
 }
 

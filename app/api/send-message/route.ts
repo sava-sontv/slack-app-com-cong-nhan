@@ -26,14 +26,14 @@ function buildMessageBlocks(message: string): SlackBlock[] {
       elements: [
         {
           type: 'button',
-          text: { type: 'plain_text', text: 'Yes' },
+          text: { type: 'plain_text', text: 'Có' },
           action_id: 'yes_button',
           value: 'yes',
           style: 'primary',
         },
         {
           type: 'button',
-          text: { type: 'plain_text', text: 'No' },
+          text: { type: 'plain_text', text: 'Không' },
           action_id: 'no_button',
           value: 'no',
         },
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const message = body.message || 'Bạn có đồng ý không?';
+    const message = body.message || 'SAVA - Cơm Công Nhân?';
     const channel = body.channel || SLACK_CHANNEL;
 
     const response = await fetch('https://slack.com/api/chat.postMessage', {

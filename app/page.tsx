@@ -54,7 +54,7 @@ export default function HomePage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: message.trim() || 'Bạn có đồng ý không?',
+          message: message.trim() || 'SAVA - Cơm Công Nhân?',
           channel: channel.trim() || undefined,
         }),
       });
@@ -128,7 +128,7 @@ export default function HomePage() {
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Bạn có đồng ý không?"
+            placeholder="SAVA - Cơm Công Nhân?"
             rows={3}
             style={{
               width: '100%',
