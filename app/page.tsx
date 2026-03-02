@@ -6,9 +6,15 @@ type SendStatus = 'idle' | 'loading' | 'success' | 'error';
 
 export default function HomePage() {
   const [message, setMessage] = useState('Bạn có đồng ý không?');
-  const [channel, setChannel] = useState('');
   const [status, setStatus] = useState<SendStatus>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const listChannel = [
+    {
+      value: '#hello-world',
+      label: '#hello-world',
+    },
+  ];
+  const [channel, setChannel] = useState(listChannel[0].value);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,11 +124,9 @@ export default function HomePage() {
           >
             Channel (tùy chọn, mặc định: #general)
           </label>
-          <input
-            type="text"
+          <select
             value={channel}
             onChange={(e) => setChannel(e.target.value)}
-            placeholder="#general"
             style={{
               width: '100%',
               padding: '0.75rem',
@@ -133,7 +137,13 @@ export default function HomePage() {
               fontSize: '0.95rem',
               marginBottom: '1.25rem',
             }}
-          />
+          >
+            {listChannel.map((channel) => (
+              <option key={channel.value} value={channel.value}>
+                {channel.label}
+              </option>
+            ))}
+          </select>
 
           {status === 'success' && (
             <p
