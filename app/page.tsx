@@ -16,8 +16,8 @@ type SlackResponse = {
 };
 
 const defaultQuestion = 'SAVA - Cơm Công Nhân?';
-// const defaultChannel = '#lên-tỉnh';
-const defaultChannel = '#hello-world';
+const defaultChannel = '#lên-tỉnh';
+// const defaultChannel = '#hello-world';
 
 export default function HomePage() {
   const [message, setMessage] = useState(defaultQuestion);
