@@ -15,11 +15,14 @@ type SlackBlock = {
   }>;
 };
 
+const TITLE_ICON = ':fork_and_knife:';
+
 function buildMessageBlocks(message: string): SlackBlock[] {
+  const titleText = `${TITLE_ICON} ${message}`;
   return [
     {
       type: 'section',
-      text: { type: 'mrkdwn', text: message },
+      text: { type: 'mrkdwn', text: titleText },
     },
     {
       type: 'actions',

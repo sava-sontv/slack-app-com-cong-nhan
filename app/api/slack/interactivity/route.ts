@@ -20,6 +20,9 @@ type BlockActionsPayload = {
   actions?: Array<{ action_id?: string; value?: string }>;
 };
 
+const ICON_YES = ':white_check_mark:';
+const ICON_NO = ':x:';
+
 function buildSummaryLines(responses: { userId: string; choice: string }[]) {
   const yesUsers = responses.filter((r) => r.choice === 'yes');
   const noUsers = responses.filter((r) => r.choice === 'no');
@@ -27,12 +30,12 @@ function buildSummaryLines(responses: { userId: string; choice: string }[]) {
   const noCount = noUsers.length;
   const yesLine =
     yesCount > 0
-      ? `*Có (${yesCount}):* ${yesUsers.map((u) => `<@${u.userId}>`).join(' ')}`
-      : `*Có (0):* _chưa có_`;
+      ? `${ICON_YES} *Có (${yesCount}):* ${yesUsers.map((u) => `<@${u.userId}>`).join(' ')}`
+      : `${ICON_YES} *Có (0):* _chưa có_`;
   const noLine =
     noCount > 0
-      ? `*Không (${noCount}):* ${noUsers.map((u) => `<@${u.userId}>`).join(' ')}`
-      : `*Không (0):* _chưa có_`;
+      ? `${ICON_NO} *Không (${noCount}):* ${noUsers.map((u) => `<@${u.userId}>`).join(' ')}`
+      : `${ICON_NO} *Không (0):* _chưa có_`;
   return `${yesLine}\n${noLine}`;
 }
 
