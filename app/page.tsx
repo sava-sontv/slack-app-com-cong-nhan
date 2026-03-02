@@ -218,74 +218,149 @@ export default function HomePage() {
           </button>
         </form>
 
-        {responses.length > 0 && (
-          <div
-            style={{
-              marginTop: '2rem',
-              paddingTop: '1.5rem',
-              borderTop: '1px solid rgba(255,255,255,0.15)',
-            }}
-          >
-            <h2
+        {responses.length > 0 && (() => {
+          const latestByUser = new Map<string, SlackResponse>();
+          for (const r of responses) {
+            const existing = latestByUser.get(r.userId);
+            if (
+              !existing ||
+              new Date(r.respondedAt) > new Date(existing.respondedAt)
+            ) {
+              latestByUser.set(r.userId, r);
+            }
+          }
+          const allLatest = Array.from(latestByUser.values());
+          const yesList = allLatest
+            .filter((r) => r.choice === 'yes')
+            .sort((a, b) => a.userName.localeCompare(b.userName));
+          const noList = allLatest
+            .filter((r) => r.choice === 'no')
+            .sort((a, b) => a.userName.localeCompare(b.userName));
+          return (
+            <div
               style={{
-                color: '#fff',
-                fontSize: '1.1rem',
-                marginBottom: '0.75rem',
-                fontWeight: 600,
+                marginTop: '2rem',
+                paddingTop: '1.5rem',
+                borderTop: '1px solid rgba(255,255,255,0.15)',
               }}
             >
-              Phản hồi từ Channel
-            </h2>
-            <ul
-              style={{
-                listStyle: 'none',
-                padding: 0,
-                margin: 0,
-                maxHeight: '200px',
-                overflowY: 'auto',
-              }}
-            >
-              {responses.map((r) => (
-                <li
-                  key={r.id}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '0.75rem',
+                }}
+              >
+                <h2
                   style={{
-                    padding: '0.5rem 0.75rem',
-                    marginBottom: '0.5rem',
-                    borderRadius: '8px',
-                    background: 'rgba(0,0,0,0.2)',
-                    color: 'rgba(255,255,255,0.9)',
-                    fontSize: '0.85rem',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    color: '#fff',
+                    fontSize: '1.1rem',
+                    fontWeight: 600,
+                    margin: 0,
                   }}
                 >
-                  <span>
-                    <strong>{r.userName}</strong> →{' '}
-                    <span
-                      style={{
-                        color: r.choice === 'yes' ? '#4ade80' : '#f87171',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {r.choice === 'yes' ? 'Yes' : 'No'}
-                    </span>
-                    {' · '}
-                    {r.channelName}
-                  </span>
-                  <span
+                  Phản hồi từ Channel
+                </h2>
+                <button
+                  type="button"
+                  onClick={fetchResponses}
+                  style={{
+                    padding: '0.35rem 0.6rem',
+                    fontSize: '0.8rem',
+                    borderRadius: '6px',
+                    border: '1px solid rgba(255,255,255,0.3)',
+                    background: 'rgba(255,255,255,0.1)',
+                    color: '#fff',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Làm mới
+                </button>
+              </div>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '1rem',
+                }}
+              >
+                <div
+                  style={{
+                    background: 'rgba(74,222,128,0.15)',
+                    borderRadius: '8px',
+                    padding: '0.75rem',
+                    border: '1px solid rgba(74,222,128,0.3)',
+                  }}
+                >
+                  <div
                     style={{
-                      color: 'rgba(255,255,255,0.5)',
-                      fontSize: '0.75rem',
+                      color: '#4ade80',
+                      fontWeight: 600,
+                      fontSize: '0.9rem',
+                      marginBottom: '0.5rem',
                     }}
                   >
-                    {new Date(r.respondedAt).toLocaleString('vi-VN')}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+                    Yes ({yesList.length})
+                  </div>
+                  <ul
+                    style={{
+                      listStyle: 'none',
+                      padding: 0,
+                      margin: 0,
+                      color: 'rgba(255,255,255,0.9)',
+                      fontSize: '0.85rem',
+                      maxHeight: '120px',
+                      overflowY: 'auto',
+                    }}
+                  >
+                    {yesList.map((r) => (
+                      <li key={r.userId} style={{ padding: '0.2rem 0' }}>
+                        {r.userName}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div
+                  style={{
+                    background: 'rgba(248,113,113,0.15)',
+                    borderRadius: '8px',
+                    padding: '0.75rem',
+                    border: '1px solid rgba(248,113,113,0.3)',
+                  }}
+                >
+                  <div
+                    style={{
+                      color: '#f87171',
+                      fontWeight: 600,
+                      fontSize: '0.9rem',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
+                    No ({noList.length})
+                  </div>
+                  <ul
+                    style={{
+                      listStyle: 'none',
+                      padding: 0,
+                      margin: 0,
+                      color: 'rgba(255,255,255,0.9)',
+                      fontSize: '0.85rem',
+                      maxHeight: '120px',
+                      overflowY: 'auto',
+                    }}
+                  >
+                    {noList.map((r) => (
+                      <li key={r.userId} style={{ padding: '0.2rem 0' }}>
+                        {r.userName}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </main>
   );

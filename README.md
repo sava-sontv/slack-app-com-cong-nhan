@@ -65,6 +65,8 @@ Mở http://localhost:3000
 
 **Quan trọng**: Sau khi deploy, cập nhật **Request URL** trong Slack App (Interactivity) thành URL thực của bạn.
 
+**Lưu ý (Vercel)**: Phản hồi Yes/No được lưu in-memory. Trên Vercel serverless, dữ liệu có thể mất khi cold start. Để lưu trữ bền vững, cần thêm Vercel KV hoặc database.
+
 ## Cách sử dụng
 
 1. Mở ứng dụng (local hoặc Vercel)

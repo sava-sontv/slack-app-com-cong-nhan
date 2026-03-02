@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { addResponse } from '@/lib/store';
 
 const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;
 const FIVE_MINUTES = 5 * 60;
@@ -64,16 +65,37 @@ export async function POST(request: NextRequest) {
     if (payload.type === 'block_actions') {
       const action = payload.actions?.[0];
       const responseUrl = payload.response_url;
-      const user = payload.user?.name || 'Unknown';
-
+      const user = payload.user;
+      const channel = payload.channel;
+      const userName = user?.name ?? user?.username ?? user?.id ?? 'Unknown';
       const actionValue = action?.value;
       const actionId = action?.action_id;
 
+      const isYes = actionId === 'yes_button' || actionValue === 'yes';
+      const isNo = actionId === 'no_button' || actionValue === 'no';
+
+      if (isYes || isNo) {
+        const messageTs =
+          payload.message?.ts ??
+          payload.container?.message_ts ??
+          'unknown';
+        if (user?.id && channel?.id) {
+          addResponse({
+            userId: user.id,
+            userName,
+            channelId: channel.id,
+            channelName: channel.name ?? channel.id,
+            messageTs,
+            choice: isYes ? 'yes' : 'no',
+          });
+        }
+      }
+
       let responseText = '';
-      if (actionId === 'yes_button' || actionValue === 'yes') {
-        responseText = `:white_check_mark: ${user} đã chọn **Yes**`;
-      } else if (actionId === 'no_button' || actionValue === 'no') {
-        responseText = `:x: ${user} đã chọn **No**`;
+      if (isYes) {
+        responseText = `:white_check_mark: ${userName} đã chọn **Yes**`;
+      } else if (isNo) {
+        responseText = `:x: ${userName} đã chọn **No**`;
       }
 
       if (responseUrl && responseText) {
