@@ -5,10 +5,10 @@ const SLACK_CHANNEL = process.env.SLACK_CHANNEL || '#hello-world';
 
 type SlackBlock = {
   type: string;
-  text?: { type: string; text: string };
+  text?: { type: string; text: string; emoji?: boolean };
   elements?: Array<{
     type: string;
-    text?: { type: string; text: string };
+    text?: string | { type: string; text: string; emoji?: boolean };
     action_id?: string;
     value?: string;
     style?: string;
@@ -18,25 +18,35 @@ type SlackBlock = {
 const TITLE_ICON = ':fork_and_knife:';
 
 function buildMessageBlocks(message: string): SlackBlock[] {
-  const titleText = `${TITLE_ICON} ${message}`;
+  const title = message.trim() || 'SAVA - Cơm Công Nhân?';
   return [
     {
-      type: 'section',
-      text: { type: 'mrkdwn', text: titleText },
+      type: 'header',
+      text: { type: 'plain_text', text: `${TITLE_ICON} ${title}`, emoji: true },
+    },
+    { type: 'divider' },
+    {
+      type: 'context',
+      elements: [
+        {
+          type: 'mrkdwn',
+          text: '👇 Chọn *Có* hoặc *Không* bên dưới để phản hồi',
+        },
+      ] as SlackBlock['elements'],
     },
     {
       type: 'actions',
       elements: [
         {
           type: 'button',
-          text: { type: 'plain_text', text: 'Có' },
+          text: { type: 'plain_text', text: '✅ Có', emoji: true },
           action_id: 'yes_button',
           value: 'yes',
           style: 'primary',
         },
         {
           type: 'button',
-          text: { type: 'plain_text', text: 'Không' },
+          text: { type: 'plain_text', text: '❌ Không', emoji: true },
           action_id: 'no_button',
           value: 'no',
         },

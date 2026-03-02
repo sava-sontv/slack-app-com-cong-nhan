@@ -23,20 +23,23 @@ type BlockActionsPayload = {
 const ICON_YES = ':white_check_mark:';
 const ICON_NO = ':x:';
 
-function buildSummaryLines(responses: { userId: string; choice: string }[]) {
+function buildSummaryBlocks(responses: { userId: string; choice: string }[]) {
   const yesUsers = responses.filter((r) => r.choice === 'yes');
   const noUsers = responses.filter((r) => r.choice === 'no');
   const yesCount = yesUsers.length;
   const noCount = noUsers.length;
-  const yesLine =
+  const yesText =
     yesCount > 0
       ? `${ICON_YES} *Có (${yesCount}):* ${yesUsers.map((u) => `<@${u.userId}>`).join(' ')}`
       : `${ICON_YES} *Có (0):* _chưa có_`;
-  const noLine =
+  const noText =
     noCount > 0
       ? `${ICON_NO} *Không (${noCount}):* ${noUsers.map((u) => `<@${u.userId}>`).join(' ')}`
       : `${ICON_NO} *Không (0):* _chưa có_`;
-  return `${yesLine}\n${noLine}`;
+  return [
+    { type: 'section', text: { type: 'mrkdwn' as const, text: yesText } },
+    { type: 'section', text: { type: 'mrkdwn' as const, text: noText } },
+  ] as SlackBlock[];
 }
 
 export async function POST(request: NextRequest) {
@@ -106,35 +109,20 @@ export async function POST(request: NextRequest) {
   });
 
   const responses = await getResponsesByMessageTs(messageTs);
-  const summaryText = buildSummaryLines(responses);
+  const summaryBlocks = buildSummaryBlocks(responses);
 
   const existingBlocks = payload.message?.blocks ?? [];
-  let textBlock = existingBlocks.find(
-    (b) => b.type === 'section' && b.text
-  ) as SlackBlock | undefined;
-  if (!textBlock && payload.message?.text) {
-    textBlock = {
-      type: 'section',
-      text: { type: 'mrkdwn', text: payload.message.text },
-    };
-  }
   const actionsBlock = existingBlocks.find(
     (b) => b.type === 'actions'
   ) as SlackBlock | undefined;
+  const preambleBlocks = existingBlocks.filter((b) => b !== actionsBlock);
+  const dividerBlock: SlackBlock = { type: 'divider' };
 
-  const summaryBlock: SlackBlock = {
-    type: 'section',
-    text: { type: 'mrkdwn', text: summaryText },
-  };
-
-  const newBlocks: SlackBlock[] = [];
-  if (textBlock) {
-    newBlocks.push(textBlock);
-  }
-  newBlocks.push(summaryBlock);
-  if (actionsBlock) {
-    newBlocks.push(actionsBlock);
-  }
+  const newBlocks: SlackBlock[] = [
+    ...preambleBlocks,
+    ...summaryBlocks,
+    ...(actionsBlock ? [dividerBlock, actionsBlock] : []),
+  ];
 
   if (SLACK_BOT_TOKEN && newBlocks.length > 0 && payload.channel) {
     await fetch('https://slack.com/api/chat.update', {

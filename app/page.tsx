@@ -16,7 +16,7 @@ type SlackResponse = {
 };
 
 const defaultQuestion = 'SAVA - Cơm Công Nhân?';
-const defaultChannel = '#hello-world';
+const defaultChannel = '#lên-tỉnh';
 
 export default function HomePage() {
   const [message, setMessage] = useState(defaultQuestion);
@@ -24,6 +24,10 @@ export default function HomePage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [responses, setResponses] = useState<SlackResponse[]>([]);
   const listChannel = [
+    {
+      value: '#lên-tỉnh',
+      label: '#lên-tỉnh',
+    },
     {
       value: '#hello-world',
       label: '#hello-world',
