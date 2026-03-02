@@ -27,12 +27,12 @@ function buildSummaryLines(responses: { userId: string; choice: string }[]) {
   const noCount = noUsers.length;
   const yesLine =
     yesCount > 0
-      ? `*Yes (${yesCount}):* ${yesUsers.map((u) => `<@${u.userId}>`).join(' ')}`
-      : `*Yes (0):* _chưa có_`;
+      ? `*Có (${yesCount}):* ${yesUsers.map((u) => `<@${u.userId}>`).join(' ')}`
+      : `*Có (0):* _chưa có_`;
   const noLine =
     noCount > 0
-      ? `*No (${noCount}):* ${noUsers.map((u) => `<@${u.userId}>`).join(' ')}`
-      : `*No (0):* _chưa có_`;
+      ? `*Không (${noCount}):* ${noUsers.map((u) => `<@${u.userId}>`).join(' ')}`
+      : `*Không (0):* _chưa có_`;
   return `${yesLine}\n${noLine}`;
 }
 

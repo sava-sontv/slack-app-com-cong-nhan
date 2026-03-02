@@ -15,8 +15,11 @@ type SlackResponse = {
   respondedAt: string;
 };
 
+const defaultQuestion = 'SAVA - Cơm Công Nhân?';
+const defaultChannel = '#hello-world';
+
 export default function HomePage() {
-  const [message, setMessage] = useState('Bạn có đồng ý không?');
+  const [message, setMessage] = useState(defaultQuestion);
   const [status, setStatus] = useState<SendStatus>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const [responses, setResponses] = useState<SlackResponse[]>([]);
@@ -54,7 +57,7 @@ export default function HomePage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: message.trim() || 'SAVA - Cơm Công Nhân?',
+          message: message.trim() || defaultQuestion,
           channel: channel.trim() || undefined,
         }),
       });
@@ -111,7 +114,7 @@ export default function HomePage() {
             marginBottom: '1.5rem',
           }}
         >
-          Gửi tin nhắn với nút Yes/No tới Slack
+          Gửi tin nhắn với nút Có/Không tới Slack
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -128,7 +131,7 @@ export default function HomePage() {
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="SAVA - Cơm Công Nhân?"
+            placeholder={defaultQuestion}
             rows={3}
             style={{
               width: '100%',
