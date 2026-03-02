@@ -66,7 +66,17 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const message = body.message || 'SAVA - Cơm Công Nhân?';
-    const channel = body.channel || SLACK_CHANNEL;
+    const rawChannel = (body.channel || SLACK_CHANNEL || '').trim();
+    const channel = rawChannel.startsWith('#')
+      ? rawChannel.slice(1)
+      : rawChannel;
+
+    if (!channel) {
+      return NextResponse.json(
+        { error: 'Channel is required' },
+        { status: 400 }
+      );
+    }
 
     const response = await fetch('https://slack.com/api/chat.postMessage', {
       method: 'POST',
@@ -84,8 +94,13 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
 
     if (!data.ok) {
+      const slackError = data.error || 'Failed to send message';
+      const hint =
+        slackError === 'channel_not_found'
+          ? ' (Thử dùng Channel ID thay vì tên, hoặc mời bot vào channel)'
+          : '';
       return NextResponse.json(
-        { error: data.error || 'Failed to send message' },
+        { error: `${slackError}${hint}` },
         { status: 400 }
       );
     }

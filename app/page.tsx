@@ -34,6 +34,7 @@ export default function HomePage() {
     },
   ];
   const [channel, setChannel] = useState(listChannel[0].value);
+  const [channelIdOverride, setChannelIdOverride] = useState('');
 
   const fetchResponses = useCallback(async () => {
     try {
@@ -62,7 +63,9 @@ export default function HomePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: message.trim() || defaultQuestion,
-          channel: channel.trim() || undefined,
+          channel: channelIdOverride.trim()
+            ? channelIdOverride.trim()
+            : channel.trim() || undefined,
         }),
       });
 
@@ -158,7 +161,7 @@ export default function HomePage() {
               marginBottom: '0.4rem',
             }}
           >
-            Channel (tùy chọn, mặc định: #hello-world)
+            Channel (tùy chọn, mặc định: {defaultChannel})
           </label>
           <select
             value={channel}
@@ -180,6 +183,23 @@ export default function HomePage() {
               </option>
             ))}
           </select>
+          <input
+            type="text"
+            placeholder="Hoặc Channel ID (khi channel_not_found / tên có dấu)"
+            value={channelIdOverride}
+            onChange={(e) => setChannelIdOverride(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '0.5rem 0.75rem',
+              borderRadius: '8px',
+              border: '1px solid rgba(255,255,255,0.2)',
+              background: 'rgba(0,0,0,0.2)',
+              color: '#fff',
+              fontSize: '0.85rem',
+              marginBottom: '1.25rem',
+              boxSizing: 'border-box',
+            }}
+          />
 
           {status === 'success' && (
             <p
