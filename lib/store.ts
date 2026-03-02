@@ -117,3 +117,21 @@ export async function getResponses(): Promise<SlackResponse[]> {
   `;
   return (rows as SlackResponseRow[]).map(rowToResponse);
 }
+
+/**
+ * Lấy tất cả phản hồi theo message_ts (một tin nhắn cụ thể).
+ * Dùng để hiển thị danh sách user theo nhóm Yes/No trên Slack.
+ */
+export async function getResponsesByMessageTs(
+  messageTs: string
+): Promise<SlackResponse[]> {
+  const sql = getSql();
+  const rows = await sql`
+    SELECT id, user_id, user_name, channel_id, channel_name,
+           message_ts, choice, responded_at::text AS responded_at
+    FROM slack_responses
+    WHERE message_ts = ${messageTs}
+    ORDER BY choice, responded_at
+  `;
+  return (rows as SlackResponseRow[]).map(rowToResponse);
+}

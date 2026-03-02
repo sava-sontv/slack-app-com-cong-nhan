@@ -1,17 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySlackRequest } from '@/lib/slackVerify';
-import { addResponse } from '@/lib/store';
+import { addResponse, getResponsesByMessageTs } from '@/lib/store';
 
 const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;
+const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
+
+type SlackBlock = {
+  type: string;
+  text?: { type: string; text: string };
+  elements?: unknown[];
+};
 
 type BlockActionsPayload = {
   type: string;
   user?: { id: string; username?: string; name?: string };
   channel?: { id: string; name?: string };
-  message?: { ts: string };
+  message?: { ts: string; text?: string; blocks?: SlackBlock[] };
   container?: { message_ts?: string };
   actions?: Array<{ action_id?: string; value?: string }>;
 };
+
+function buildSummaryLines(responses: { userId: string; choice: string }[]) {
+  const yesUsers = responses.filter((r) => r.choice === 'yes');
+  const noUsers = responses.filter((r) => r.choice === 'no');
+  const yesLine =
+    yesUsers.length > 0
+      ? `*Yes:* ${yesUsers.map((u) => `<@${u.userId}>`).join(' ')}`
+      : '*Yes:* _chưa có_';
+  const noLine =
+    noUsers.length > 0
+      ? `*No:* ${noUsers.map((u) => `<@${u.userId}>`).join(' ')}`
+      : '*No:* _chưa có_';
+  return `${yesLine}\n${noLine}`;
+}
 
 export async function POST(request: NextRequest) {
   if (!SLACK_SIGNING_SECRET) {
@@ -78,6 +99,52 @@ export async function POST(request: NextRequest) {
     messageTs,
     choice,
   });
+
+  const responses = await getResponsesByMessageTs(messageTs);
+  const summaryText = buildSummaryLines(responses);
+
+  const existingBlocks = payload.message?.blocks ?? [];
+  let textBlock = existingBlocks.find(
+    (b) => b.type === 'section' && b.text
+  ) as SlackBlock | undefined;
+  if (!textBlock && payload.message?.text) {
+    textBlock = {
+      type: 'section',
+      text: { type: 'mrkdwn', text: payload.message.text },
+    };
+  }
+  const actionsBlock = existingBlocks.find(
+    (b) => b.type === 'actions'
+  ) as SlackBlock | undefined;
+
+  const summaryBlock: SlackBlock = {
+    type: 'section',
+    text: { type: 'mrkdwn', text: summaryText },
+  };
+
+  const newBlocks: SlackBlock[] = [];
+  if (textBlock) {
+    newBlocks.push(textBlock);
+  }
+  newBlocks.push(summaryBlock);
+  if (actionsBlock) {
+    newBlocks.push(actionsBlock);
+  }
+
+  if (SLACK_BOT_TOKEN && newBlocks.length > 0 && payload.channel) {
+    await fetch('https://slack.com/api/chat.update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${SLACK_BOT_TOKEN}`,
+      },
+      body: JSON.stringify({
+        channel: payload.channel.id,
+        ts: messageTs,
+        blocks: newBlocks,
+      }),
+    });
+  }
 
   return NextResponse.json({ ok: true });
 }
