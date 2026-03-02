@@ -7,7 +7,7 @@ const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
 
 type SlackBlock = {
   type: string;
-  text?: { type: string; text: string };
+  text?: { type: string; text: string; emoji?: boolean };
   elements?: unknown[];
 };
 
@@ -22,6 +22,8 @@ type BlockActionsPayload = {
 
 const ICON_YES = ':white_check_mark:';
 const ICON_NO = ':x:';
+const TITLE_ICON = ':fork_and_knife:';
+const TITLE = 'SAVA - Cơm Công Nhân?';
 
 function buildSummaryLines(responses: { userId: string; choice: string }[]) {
   const yesUsers = responses.filter((r) => r.choice === 'yes');
@@ -128,9 +130,21 @@ export async function POST(request: NextRequest) {
   };
 
   const newBlocks: SlackBlock[] = [];
-  if (textBlock) {
-    newBlocks.push(textBlock);
-  }
+  newBlocks.push(    {
+    type: 'header',
+    text: { type: 'plain_text', text: `${TITLE_ICON} ${TITLE}`, emoji: true },
+  },
+  { type: 'divider' },
+  {
+    type: 'context',
+    elements: [
+      {
+        type: 'mrkdwn',
+        text: '👇 Chọn *Có* hoặc *Không* bên dưới để phản hồi',
+      },
+    ] as SlackBlock['elements'],
+  },);
+
   newBlocks.push(summaryBlock);
   if (actionsBlock) {
     newBlocks.push(actionsBlock);
