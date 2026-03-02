@@ -124,20 +124,31 @@ export async function POST(request: NextRequest) {
     ...(actionsBlock ? [dividerBlock, actionsBlock] : []),
   ];
 
-  if (SLACK_BOT_TOKEN && newBlocks.length > 0 && payload.channel) {
-    await fetch('https://slack.com/api/chat.update', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${SLACK_BOT_TOKEN}`,
-      },
-      body: JSON.stringify({
-        channel: payload.channel.id,
-        ts: messageTs,
-        blocks: newBlocks,
-      }),
-    });
-  }
+  // if (SLACK_BOT_TOKEN && newBlocks.length > 0 && payload.channel) {
+  //   await fetch('https://slack.com/api/chat.update', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Authorization: `Bearer ${SLACK_BOT_TOKEN}`,
+  //     },
+  //     body: JSON.stringify({
+  //       channel: payload.channel.id,
+  //       ts: messageTs,
+  //       blocks: newBlocks,
+  //     }),
+  //   });
+  // }
 
-  return NextResponse.json({ ok: true });
+  // return NextResponse.json({ ok: true });
+
+  const fallbackText =
+    payload.message?.text ?? 'SAVA - Cơm Công Nhân?';
+
+  return NextResponse.json({
+    response_action: 'update',
+    message: {
+      blocks: newBlocks,
+      text: fallbackText,
+    },
+  });
 }
