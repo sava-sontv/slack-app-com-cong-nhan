@@ -2,6 +2,6 @@ import { NextResponse } from 'next/server';
 import { getResponses } from '@/lib/store';
 
 export async function GET() {
-  const responses = getResponses();
+  const responses = await getResponses();
   return NextResponse.json(responses);
 }

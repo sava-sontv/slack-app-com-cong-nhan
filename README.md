@@ -46,6 +46,7 @@ Tạo file `.env.local` (local) hoặc cấu hình trên Vercel:
 | `SLACK_BOT_TOKEN` | Bot User OAuth Token (xoxb-...) |
 | `SLACK_SIGNING_SECRET` | Signing Secret từ Basic Information |
 | `SLACK_CHANNEL` | Channel mặc định (ví dụ: #general) |
+| `POSTGRES_URL` | Vercel Neon connection string (lưu phản hồi Yes/No) |
 
 ## Chạy local
 
@@ -65,7 +66,7 @@ Mở http://localhost:3000
 
 **Quan trọng**: Sau khi deploy, cập nhật **Request URL** trong Slack App (Interactivity) thành URL thực của bạn.
 
-**Lưu ý (Vercel)**: Phản hồi Yes/No được lưu in-memory. Trên Vercel serverless, dữ liệu có thể mất khi cold start. Để lưu trữ bền vững, cần thêm Vercel KV hoặc database.
+**Lưu trữ**: Phản hồi Yes/No được lưu trong Vercel Neon (Postgres). Thêm integration Neon trong Vercel Dashboard hoặc tạo DB tại [neon.tech](https://neon.tech), sau đó chạy schema trong `lib/schema.sql` (Neon SQL Editor hoặc `psql $POSTGRES_URL -f lib/schema.sql`).
 
 ## Cách sử dụng
 

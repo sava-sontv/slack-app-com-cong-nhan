@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
   const messageTs =
     payload.message?.ts ?? payload.container?.message_ts ?? 'unknown';
 
-  addResponse({
+  await addResponse({
     userId: payload.user.id,
     userName:
       payload.user.name ?? payload.user.username ?? payload.user.id,

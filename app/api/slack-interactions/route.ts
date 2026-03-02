@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
           payload.container?.message_ts ??
           'unknown';
         if (user?.id && channel?.id) {
-          addResponse({
+          await addResponse({
             userId: user.id,
             userName,
             channelId: channel.id,
