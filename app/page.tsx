@@ -226,7 +226,7 @@ export default function HomePage() {
           </button>
         </form>
 
-        {responses.length > 0 && (() => {
+        {responses.length >= 0 && (() => {
           const latestByUser = new Map<string, SlackResponse>();
           for (const r of responses) {
             const existing = latestByUser.get(r.userId);
