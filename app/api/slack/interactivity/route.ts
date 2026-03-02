@@ -130,20 +130,15 @@ export async function POST(request: NextRequest) {
   };
 
   const newBlocks: SlackBlock[] = [];
-  newBlocks.push(    {
+  newBlocks.push({
     type: 'header',
     text: { type: 'plain_text', text: `${TITLE_ICON} ${TITLE}`, emoji: true },
-  },
-  { type: 'divider' },
-  {
+  });
+  newBlocks.push({ type: 'divider' });
+  newBlocks.push({
     type: 'context',
-    elements: [
-      {
-        type: 'mrkdwn',
-        text: '👇 Chọn *Có* hoặc *Không* bên dưới để phản hồi',
-      },
-    ] as SlackBlock['elements'],
-  },);
+    elements: [{ type: 'mrkdwn', text: '👇 Chọn *Có* hoặc *Không* bên dưới để phản hồi' }],
+  });
 
   newBlocks.push(summaryBlock);
   if (actionsBlock) {
