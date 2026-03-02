@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Slack Message App',
-  description: 'Send messages to Slack with Yes/No buttons',
+  title: 'SAVA - Cơm Công Nhân',
+  description: 'Send messages to Slack with Có/Không buttons',
 };
 
 export default function RootLayout({
