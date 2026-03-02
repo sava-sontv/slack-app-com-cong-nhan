@@ -1,13 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 type SendStatus = 'idle' | 'loading' | 'success' | 'error';
+
+type SlackResponse = {
+  id: string;
+  userId: string;
+  userName: string;
+  channelId: string;
+  channelName: string;
+  messageTs: string;
+  choice: 'yes' | 'no';
+  respondedAt: string;
+};
 
 export default function HomePage() {
   const [message, setMessage] = useState('Bạn có đồng ý không?');
   const [status, setStatus] = useState<SendStatus>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [responses, setResponses] = useState<SlackResponse[]>([]);
   const listChannel = [
     {
       value: '#hello-world',
@@ -15,6 +27,22 @@ export default function HomePage() {
     },
   ];
   const [channel, setChannel] = useState(listChannel[0].value);
+
+  const fetchResponses = useCallback(async () => {
+    try {
+      const res = await fetch('/api/responses');
+      if (res.ok) {
+        const data = await res.json();
+        setResponses(data);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchResponses();
+  }, [fetchResponses]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +66,7 @@ export default function HomePage() {
       }
 
       setStatus('success');
+      fetchResponses();
     } catch (err) {
       setStatus('error');
       setErrorMsg((err as Error).message);
@@ -122,7 +151,7 @@ export default function HomePage() {
               marginBottom: '0.4rem',
             }}
           >
-            Channel (tùy chọn, mặc định: #general)
+            Channel (tùy chọn, mặc định: #hello-world)
           </label>
           <select
             value={channel}
@@ -138,9 +167,9 @@ export default function HomePage() {
               marginBottom: '1.25rem',
             }}
           >
-            {listChannel.map((channel) => (
-              <option key={channel.value} value={channel.value}>
-                {channel.label}
+            {listChannel.map((ch) => (
+              <option key={ch.value} value={ch.value}>
+                {ch.label}
               </option>
             ))}
           </select>
@@ -188,6 +217,75 @@ export default function HomePage() {
             {status === 'loading' ? 'Đang gửi...' : 'Gửi tới Slack'}
           </button>
         </form>
+
+        {responses.length > 0 && (
+          <div
+            style={{
+              marginTop: '2rem',
+              paddingTop: '1.5rem',
+              borderTop: '1px solid rgba(255,255,255,0.15)',
+            }}
+          >
+            <h2
+              style={{
+                color: '#fff',
+                fontSize: '1.1rem',
+                marginBottom: '0.75rem',
+                fontWeight: 600,
+              }}
+            >
+              Phản hồi từ Channel
+            </h2>
+            <ul
+              style={{
+                listStyle: 'none',
+                padding: 0,
+                margin: 0,
+                maxHeight: '200px',
+                overflowY: 'auto',
+              }}
+            >
+              {responses.map((r) => (
+                <li
+                  key={r.id}
+                  style={{
+                    padding: '0.5rem 0.75rem',
+                    marginBottom: '0.5rem',
+                    borderRadius: '8px',
+                    background: 'rgba(0,0,0,0.2)',
+                    color: 'rgba(255,255,255,0.9)',
+                    fontSize: '0.85rem',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <span>
+                    <strong>{r.userName}</strong> →{' '}
+                    <span
+                      style={{
+                        color: r.choice === 'yes' ? '#4ade80' : '#f87171',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {r.choice === 'yes' ? 'Yes' : 'No'}
+                    </span>
+                    {' · '}
+                    {r.channelName}
+                  </span>
+                  <span
+                    style={{
+                      color: 'rgba(255,255,255,0.5)',
+                      fontSize: '0.75rem',
+                    }}
+                  >
+                    {new Date(r.respondedAt).toLocaleString('vi-VN')}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </main>
   );

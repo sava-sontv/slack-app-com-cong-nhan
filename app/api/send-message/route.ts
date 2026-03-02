@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
-const SLACK_CHANNEL = process.env.SLACK_CHANNEL || '#general';
+const SLACK_CHANNEL = process.env.SLACK_CHANNEL || '#hello-world';
 
 type SlackBlock = {
   type: string;
