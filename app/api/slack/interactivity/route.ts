@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
     text: { type: 'mrkdwn', text: summaryText },
   };
 
-  const newBlocks: SlackBlock[] = getHeaderMessage(payload.message?.text ?? '');
+  const newBlocks: SlackBlock[] = getHeaderMessage('');
   newBlocks.push(summaryBlock);
   if (actionsBlock) {
     newBlocks.push(actionsBlock);
