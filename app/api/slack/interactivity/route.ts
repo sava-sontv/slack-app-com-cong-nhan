@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { verifySlackRequest } from '@/lib/slackVerify';
 import { addResponse, getResponsesByMessageTs } from '@/lib/store';
 import { getHeaderMessage } from '@/lib/utils';
