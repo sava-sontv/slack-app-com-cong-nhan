@@ -36,7 +36,7 @@ function buildSummaryLines(responses: { userId: string; choice: string }[]) {
     noCount > 0
       ? `${ICON_NO} *Không (${noCount}):* ${noUsers.map((u) => `<@${u.userId}>`).join(' ')}`
       : `${ICON_NO} *Không (0):* _chưa có_`;
-  return `${yesLine}\n${noLine}`;
+  return `${yesLine}\n\n${noLine}`;
 }
 
 export async function POST(request: NextRequest) {
