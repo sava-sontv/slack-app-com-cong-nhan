@@ -1,4 +1,6 @@
+/** biome-ignore-all assist/source/organizeImports: <explanation> */
 import { NextRequest, NextResponse } from 'next/server';
+import { getHeaderMessage } from '@/lib/utils';
 
 const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
 const SLACK_CHANNEL = process.env.SLACK_CHANNEL || '#hello-world';
@@ -15,25 +17,9 @@ type SlackBlock = {
   }>;
 };
 
-const TITLE_ICON = ':fork_and_knife:';
-
 function buildMessageBlocks(message: string): SlackBlock[] {
-  const title = message.trim() || 'SAVA - Cơm Công Nhân?';
   return [
-    {
-      type: 'header',
-      text: { type: 'plain_text', text: `${TITLE_ICON} ${title}`, emoji: true },
-    },
-    { type: 'divider' },
-    {
-      type: 'context',
-      elements: [
-        {
-          type: 'mrkdwn',
-          text: '👇 Chọn *Có* hoặc *Không* bên dưới để phản hồi',
-        },
-      ] as SlackBlock['elements'],
-    },
+    ...getHeaderMessage(message),
     {
       type: 'actions',
       elements: [
