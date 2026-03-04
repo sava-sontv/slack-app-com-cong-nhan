@@ -22,7 +22,8 @@ function formatDateVi(d: Date): string {
 }
 
 export const getHeaderMessage = (message?: string) => {
-    const headerTitle = `${message ?? ''}`.trim() ?? TITLE;
+    const msgTitle = message?.trim() ?? '';
+    const headerTitle = msgTitle ?? TITLE;
     const headerMessage: SlackBlock[] = [];
     headerMessage.push({
         type: 'header',
