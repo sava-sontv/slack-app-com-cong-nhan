@@ -21,7 +21,7 @@ function formatDateVi(d: Date): string {
     return `${WEEKDAYS_VI[d.getDay()]}, Ngày ${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
 }
 
-export const getHeaderMessage = (message?: string) => {
+export const getHeaderMessage = (message: string | undefined) => {
     const msgTitle = message?.trim() ?? '';
     const headerTitle = msgTitle ?? TITLE;
     const headerMessage: SlackBlock[] = [];

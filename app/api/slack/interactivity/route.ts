@@ -122,12 +122,18 @@ export async function POST(request: NextRequest) {
     (b) => b.type === 'actions'
   ) as SlackBlock | undefined;
 
+  const headerBlock = existingBlocks.find((b) => b.type === 'header');
+  const oldTitle =
+    (headerBlock?.text && typeof headerBlock.text === 'object' && 'text' in headerBlock.text
+      ? (headerBlock.text as { text: string }).text.replace(/^:\w+:\s*/, '')
+      : payload.message?.text?.trim()) ?? '';
+
   const summaryBlock: SlackBlock = {
     type: 'section',
     text: { type: 'mrkdwn', text: summaryText },
   };
 
-  const newBlocks: SlackBlock[] = getHeaderMessage('');
+  const newBlocks: SlackBlock[] = getHeaderMessage(oldTitle);
   newBlocks.push(summaryBlock);
   if (actionsBlock) {
     newBlocks.push(actionsBlock);
